@@ -133,7 +133,8 @@ static void _se_lock()
 	SE(SE_KEY_TABLE_ACCESS_LOCK_OFFSET) = 0; // Make all key access regs secure only.
 	SE(SE_RSA_KEYTABLE_ACCESS_LOCK_OFFSET) = 0; // Make all RSA access regs secure only.
 	SE(SE_SECURITY_0) &= 0xFFFFFFFB; // Make access lock regs secure only.
-	memset((void *)IPATCH_BASE, 0, 13);
+	EXCP_VEC(0x208) = BOOTROM_BASE + 0x8; // restore IROM SWI handler
+	memset((void *)IPATCH_BASE, 0, 13 * sizeof(u32)); // TODO: memset by u32 to match bootrom disassembly? Not sure if IPATCH engine cares
 	SB(SB_CSR) = 0x10; // Protected IROM enable.
 
 	// This is useful for documenting the bits in the SE config registers, so we can keep it around.
